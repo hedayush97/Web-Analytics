@@ -1,1 +1,111 @@
-# Web-Analytics
+rm(list=ls())
+
+###########################################################
+
+# 1.The team wants to analyze each variable of the data collected through data 
+# summarization to get a basic understanding of the dataset and to prepare for 
+# further analysis. To understand how the data is distributed in the dataset and 
+# the kind of variables present along with their count, what is their maximum and 
+# minimum value, etc., a summarization of the data is done.
+# 
+# Code:
+
+mydata = read.csv('Internet_Dataset.csv')
+
+# Dataset Description:
+# The variables in the dataset are defined here for better understanding:
+# 
+#   
+# Attribute	          Description
+# Bounces	            It represents the percentage of visitors who enter the site 
+#                     and "bounce" (leave the site) rather than continuing to view other pages within the same site.
+# Continent	          It shows the continent from which the site has been accessed.
+# Source group	      It shows how the visitor has accessed the site.
+# Time on page	      It shows how long the user has spent on that particular page of the website.
+# Unique pageview    	It represents the number of sessions during which that page was viewed one or more times.
+# Visits	            A visit counts all visitors, no matter how many times the same visitor may have been to your site.
+
+summary(mydata)
+str(mydata)
+
+# Result:
+# From the result of summarized dataset, it is observed that the numerical data 
+# includes information related to the maximum, minimum, and mean data. The categorical 
+# data like continent includes the data of the number of times the category has 
+# been repeated in the dataset. We can see that there is a maximum value of 30 
+# bounces for the website. This site was accessed maximum number of times by visitors 
+# from North America.
+
+
+
+#######################################################################################
+#######################################################################################
+
+
+
+# 2.	As mentioned earlier, a unique page view represents the number of 
+# sessions during which that page was viewed one or more times.
+# A visit counts all instances, no matter how many times the same visitor 
+# may have been to your site. So the team needs to know whether the unique 
+# page view value depends on visits. - ANOVA
+
+# Ho : The unique page view value does not depends on visits
+# Ha : The unique page view value depends on visits
+
+
+aov1 <- aov(Uniquepageviews ~ as.factor(Visits), data=mydata)
+summary(aov1)
+
+#Result: Since, the value of p value is less than alpha value hence we reject the null hypothesis. 
+#This shows that unique page views depends on visits.
+
+
+
+
+
+#######################################################################################
+#######################################################################################
+
+
+
+# 3.	Find out the probable factors from the dataset which could affect the exits.
+re1 <- glm(Exits ~ Bounces + Continent + Uniquepageviews +Visits +Continent, data = mydata)
+summary(re1)
+
+
+
+
+
+
+#######################################################################################
+#######################################################################################
+
+
+
+# 4.	Every site wants to increase the time on page for a visitor. 
+# This increases the chances of the visitor understanding the site content 
+# better and hence there are more chances of a transaction taking place. 
+# Find the variables which possibly have an effect on the time on page.
+# To understand and analyze the factors that are related to the time on 
+# page of the site, we need to use ANOVA. 
+
+aov3 <- aov(Timeinpage ~ Bounces + Exits + Uniquepageviews + Visits , data= mydata)
+summary(av3)
+#Result: Time inpage is dependent on the Exit variable as pvalue of Exit is less than than alpha value. 
+
+
+
+
+
+#######################################################################################
+#######################################################################################
+
+
+
+# 5.	A high bounce rate is a cause of alarm for websites that depend 
+# on visitor engagement. Help the team in determining the factors that 
+# are impacting on the bounce.
+
+mydata$Bounces <- mydata$Bounces * 0.01
+reg1 <- glm(Bounces ~ Exits + Continent + Uniquepageviews +Visits +Continent, data = mydata ,family= "binomial")
+summary(reg1)
